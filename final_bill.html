@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.js"></script>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Bill</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #4CAF50;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            margin: 20px;
+            color: white;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #45a049;
+            color: white;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <div class="container">
+        <h2>Final Bill</h2>
+        <table id="finalSalesTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Tax</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sales will be dynamically added here -->
+            </tbody>
+        </table>
+
+
+        <button onclick="downloadBillPDF()">Download PDF</button>
+
+    </div>
+
+    <script>
+
+        //function to download the bill as pdf
+
+        function downloadBillPDF() {
+            var element = document.getElementById('finalSalesTable');
+            html2pdf(element);
+        }
+        // to Retrieve sales data from sessionStorage
+        var finalSales = JSON.parse(sessionStorage.getItem('finalSales')) || [];
+        var finalSalesTable = document.getElementById('finalSalesTable');
+        var tbody = finalSalesTable.querySelector('tbody');
+
+        var grandTotal = 0;
+
+        // to Add rows to the final sales table based on sales data
+        finalSales.forEach(function (sale) {
+            var row = tbody.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            var cell5 = row.insertCell(4);
+
+            cell1.textContent = sale.name;
+            cell2.textContent = sale.category;
+            cell3.textContent = '$' + sale.price;
+            cell4.textContent = '$' + sale.tax;
+
+            // to calculate total for the current row
+            var total = parseFloat(sale.price) + parseFloat(sale.tax);
+            cell5.textContent = '$' + total.toFixed(2);
+
+            // Update the grand total
+            grandTotal += total;
+        });
+
+        // Display the overall total below the table
+        var totalRow = tbody.insertRow();
+        var totalCell1 = totalRow.insertCell(0);
+        var totalCell2 = totalRow.insertCell(1);
+        var totalCell3 = totalRow.insertCell(2);
+        var totalCell4 = totalRow.insertCell(3);
+        var totalCell5 = totalRow.insertCell(4);
+
+        totalCell1.textContent = 'Grand Total';
+        totalCell5.textContent = '$' + grandTotal.toFixed(2);
+
+    </script>
+</body>
+
+</html>

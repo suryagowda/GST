@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Products to Categories</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0e0e0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #4CAF50;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            margin: 20px;
+            color: white;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: white;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #565956;
+            color: white;
+            cursor: pointer;
+            width: 25%;
+        }
+
+        button:hover {
+            background-color: #3d874b;
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #45a049;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Add Products to Categories</h2>
+
+        <form id="productForm">
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" name="productName" required>
+
+            <label for="categoryDropdown">Category:</label>
+            <select id="categoryDropdown" name="categoryDropdown" required>
+                <!-- Categories will be dynamically added here -->
+            </select>
+
+            <button type="button" onclick="addProduct()">Add Product</button>
+        </form>
+
+        <h2>Product List</h2>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Products will be dynamicaly aded here -->
+            </tbody>
+        </table>
+
+        <button type="button" onclick="redirectToCreateSale()">Create Sale</button>
+
+    </div>
+
+    <script>
+        // Function to redirect to the create sale page
+        function redirectToCreateSale() {
+            window.location.href = 'create_sales.html';
+        }
+
+        // Retrieve categories from localStorage and populate the dropdown
+        var categories = JSON.parse(localStorage.getItem('categories')) || [];
+        var categoryDropdown = document.getElementById('categoryDropdown');
+
+        categories.forEach(function (category) {
+            var option = document.createElement('option');
+            option.value = category.rate;
+            option.text = category.name + ' (' + category.rate + '%)';
+            categoryDropdown.add(option);
+        });
+
+        // Function to add a product to the list
+        function addProduct() {
+            var productName = document.getElementById('productName').value.trim();
+            var categoryDropdown = document.getElementById('categoryDropdown');
+            var categoryIndex = categoryDropdown.selectedIndex;
+
+            if (productName === '') {
+                alert('Please enter a valid product name.');
+                return;
+            }
+
+            if (categoryIndex === -1) {
+                alert('Please select a valid category.');
+                return;
+            }
+
+            var category = categoryDropdown.options[categoryIndex].text;
+            var categoryRate = parseFloat(category.split('(')[1].split('%')[0]);
+
+            // Retrive existing products from localStorage
+            var existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+            // Add new product to the existing list
+            var newProduct = {
+                name: productName,
+                category: category,
+                rate: categoryRate
+            };
+
+            existingProducts.push(newProduct);
+
+            // Save the updated products back to localStorage
+            localStorage.setItem('products', JSON.stringify(existingProducts));
+
+            // Update the product table
+            updateProductTable();
+
+            // Clears form fields
+            document.getElementById('productName').value = '';
+        }
+
+        function updateProductTable() {
+            var products = JSON.parse(localStorage.getItem('products')) || [];
+            var productTable = document.getElementById('productTable');
+            var tbody = productTable.querySelector('tbody');
+
+            // Clear exxisting rows
+            tbody.innerHTML = '';
+
+            // Add new rows based on products
+            products.forEach(function (product) {
+                var row = tbody.insertRow();
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+
+                cell1.textContent = product.name;
+                cell2.textContent = product.category;
+            });
+        }
+
+        // Initially uppdate the product table when the page loads
+        updateProductTable();
+    </script>
+
+</body>
+
+</html>

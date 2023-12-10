@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Product Categories</title>
+    <link rel="stylesheet" href="templates/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Product Categories and GST Rates</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th>GST Rate (%)</th>
+                </tr>
+            </thead>
+            <tbody id="categoryTable">
+                <!-- Categories will be added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        try {
+            // To retrieve categories from localStorage and display them in the table
+            var categories = JSON.parse(localStorage.getItem('categories')) || [];
+            var categoryTable = document.getElementById('categoryTable');
+
+            categories.forEach(function (category) {
+                // Check if the category name is less than or equal to 15 characters
+                // and the GST rate is between 0 and 100 before displaying
+                if (isValidCategory(category)) {
+                    var row = categoryTable.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+
+                    cell1.textContent = category.name;
+                    cell2.textContent = category.rate + '%';
+                }
+            });
+        } catch (error) {
+            console.error('An error occurred while displaying categories:', error);
+            alert('An error occurred. Please try again.');
+        }
+
+        function isValidCategory(category) {
+            // Check if the category name is less than or equal to 15 characters
+            // and the GST rate is between 0 and 100
+            return (
+                category.name.length <= 15 &&
+                !isNaN(category.rate) &&
+                category.rate >= 0 &&
+                category.rate < 100
+            );
+        }
+    </script>
+</body>
+
+</html>
